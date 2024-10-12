@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generowanie Raportu</title>
-  <!-- Starsza wersja Firebase SDK -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-database.js"></script>
   <script>
@@ -56,14 +56,32 @@
     <label for="problemy">Problemy z Rolką:</label>
     <input type="text" id="problemy" value="brak" required><br><br>
 
+    <!-- Czas Wysłania Coatera -->
     <label for="ctSend">Czas wysłania Coatera:</label>
-    <input type="text" id="ctSend" placeholder="HH:MM" required><br><br>
+    <select id="ctSendHour"></select> :
+    <select id="ctSendMinute"></select>
+    <select id="ctSendPeriod">
+      <option value="AM">AM</option>
+      <option value="PM">PM</option>
+    </select><br><br>
 
+    <!-- RP Production Start -->
     <label for="rpStart">RP Production Start:</label>
-    <input type="text" id="rpStart" placeholder="HH:MM" required><br><br>
+    <select id="rpStartHour"></select> :
+    <select id="rpStartMinute"></select>
+    <select id="rpStartPeriod">
+      <option value="AM">AM</option>
+      <option value="PM">PM</option>
+    </select><br><br>
 
+    <!-- RP Production End -->
     <label for="rpEnd">RP Production End:</label>
-    <input type="text" id="rpEnd" placeholder="HH:MM" required><br><br>
+    <select id="rpEndHour"></select> :
+    <select id="rpEndMinute"></select>
+    <select id="rpEndPeriod">
+      <option value="AM">AM</option>
+      <option value="PM">PM</option>
+    </select><br><br>
 
     <label for="delayReason">Przyczyna Opóźnienia:</label>
     <input type="text" id="delayReason" required><br><br>
@@ -81,26 +99,63 @@
   </footer>
 
   <script>
-    function saveData() {
-      const model = document.getElementById('model').value;
-      const obszar = document.getElementById('obszar').value;
-      const lotRolki = document.getElementById('lotRolki').value;
-      const linia = document.getElementById('linia').value;
-      const problemy = document.getElementById('problemy').value;
-      const ctSend = document.getElementById('ctSend').value;
-      const rpStart = document.getElementById('rpStart').value;
-      const rpEnd = document.getElementById('rpEnd').value;
-      const delayReason = document.getElementById('delayReason').value;
-      const correctiveActions = document.getElementById('correctiveActions').value;
-
-      db.ref("reports/currentReport").set({
-        model, obszar, lotRolki, linia, problemy, ctSend, rpStart, rpEnd, delayReason, correctiveActions
-      });
+    // Funkcja konwersji czasu na 24-godzinny format
+    function convertTo24Hour(hour, minute, period) {
+      hour = parseInt(hour);
+      minute = parseInt(minute);
+      if (period === "PM" && hour < 12) hour += 12;
+      if (period === "AM" && hour === 12) hour = 0;
+      return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
     }
 
-    function setupAutoSave() {
-      const inputs = document.querySelectorAll("#reportForm input, #reportForm select");
-      inputs.forEach(input => input.addEventListener("input", saveData));
+    // Funkcja automatycznego zapisu danych
+    function saveData() {
+      const ctSend = convertTo24Hour(document.getElementById('ctSendHour').value, document.getElementById('ctSendMinute').value, document.getElementById('ctSendPeriod').value);
+      const rpStart = convertTo24Hour(document.getElementById('rpStartHour').value, document.getElementById('rpStartMinute').value, document.getElementById('rpStartPeriod').value);
+      const rpEnd = convertTo24Hour(document.getElementById('rpEndHour').value, document.getElementById('rpEndMinute').value, document.getElementById('rpEndPeriod').value);
+
+      const data = {
+        model: document.getElementById('model').value,
+        obszar: document.getElementById('obszar').value,
+        lotRolki: document.getElementById('lotRolki').value,
+        linia: document.getElementById('linia').value,
+        problemy: document.getElementById('problemy').value,
+        ctSend,
+        rpStart,
+        rpEnd,
+        delayReason: document.getElementById('delayReason').value,
+        correctiveActions: document.getElementById('correctiveActions').value
+      };
+
+      db.ref("reports/currentReport").set(data);
+    }
+
+    // Inicjalizacja pól wyboru godzin i minut
+    function populateTimeSelectors() {
+      const hours = [...Array(12).keys()].map(i => i + 1);
+      const minutes = [...Array(60).keys()].map(i => String(i).padStart(2, '0'));
+      const hourSelectors = ['ctSendHour', 'rpStartHour', 'rpEndHour'];
+      const minuteSelectors = ['ctSendMinute', 'rpStartMinute', 'rpEndMinute'];
+
+      hourSelectors.forEach(id => {
+        const select = document.getElementById(id);
+        hours.forEach(hour => {
+          const option = document.createElement('option');
+          option.value = hour;
+          option.text = hour;
+          select.appendChild(option);
+        });
+      });
+
+      minuteSelectors.forEach(id => {
+        const select = document.getElementById(id);
+        minutes.forEach(minute => {
+          const option = document.createElement('option');
+          option.value = minute;
+          option.text = minute;
+          select.appendChild(option);
+        });
+      });
     }
 
     function setupRealtimeListener() {
@@ -113,7 +168,7 @@
     }
 
     function generateReport(model, obszar, lotRolki, linia, problemy, ctSend, rpStart, rpEnd, delayReason, correctiveActions) {
-      var report = 
+      const report = 
         `Fast track ${model} ${obszar}\n` +
         `Lot rolki: ${lotRolki}\n` +
         `Linia: ${linia}\n` +
@@ -137,8 +192,11 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      setupAutoSave();
+      populateTimeSelectors();
       setupRealtimeListener();
+
+      const inputs = document.querySelectorAll("#reportForm input, #reportForm select");
+      inputs.forEach(input => input.addEventListener("input", saveData));
     });
   </script>
 </body>
