@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generowanie Raportu</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script>
+      // Konfiguracja Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyAOSS1SJsOWgdt8mbnG_HX-HwJZ-Bs2XWw",
+        authDomain: "fasttrack-raport-generate.firebaseapp.com",
+        databaseURL:
+          "https://fasttrack-raport-generate-default-rtdb.firebaseio.com",
+        projectId: "fasttrack-raport-generate",
+        storageBucket: "fasttrack-raport-generate.appspot.com",
+        messagingSenderId: "317915719983",
+        appId: "1:317915719983:web:43d47d3d5a4f4d877d99da",
+        measurementId: "G-3478ZMQZ8S",
+      };
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+    </script>
+  </head>
+  <body>
+    <h1>Generowanie Raportu</h1>
+    <form id="reportForm">
+      <!-- Wybór Modelu -->
+      <label for="model">Model:</label>
+      <select id="model" required>
+        <option value="e129">e129</option>
+        <option value="e131">e131</option>
+        <option value="e125">e125</option></select
+      ><br /><br />
+
+      <!-- Wybór Obszaru -->
+      <label for="obszar">Obszar:</label>
+      <select id="obszar" required>
+        <option value="anoda">Anoda</option>
+        <option value="cathoda">Cathoda</option></select
+      ><br /><br />
+
+      <!-- Lot Rolki -->
+      <label for="lotRolki">Lot Rolki:</label>
+      <input type="text" id="lotRolki" required /><br /><br />
+
+      <!-- Wybór Linii -->
+      <label for="linia">Linia:</label>
+      <select id="linia" required>
+        <option value="8-1">8-1</option>
+        <option value="8-2">8-2</option>
+        <option value="9-1">9-1</option>
+        <option value="9-2">9-2</option>
+        <option value="10-1">10-1</option>
+        <option value="10-2">10-2</option></select
+      ><br /><br />
+
+      <!-- Problemy z Rolką -->
+      <label for="problemy">Problemy z Rolką:</label>
+      <input type="text" id="problemy" value="brak" required /><br /><br />
+
+      <!-- Czas Wysłania Coatera -->
+      <label for="ctSend">Czas wysłania Coatera:</label>
+      <input type="text" id="ctSend" placeholder="HH:MM" required /><br /><br />
+
+      <!-- RP Production Start -->
+      <label for="rpStart">RP Production Start:</label>
+      <input
+        type="text"
+        id="rpStart"
+        placeholder="HH:MM"
+        required
+      /><br /><br />
+
+      <!-- RP Production End -->
+      <label for="rpEnd">RP Production End:</label>
+      <input type="text" id="rpEnd" placeholder="HH:MM" required /><br /><br />
+
+      <!-- Przyczyna Opóźnienia -->
+      <label for="delayReason">Przyczyna Opóźnienia:</label>
+      <input type="text" id="delayReason" required /><br /><br />
+
+      <!-- Akcje Korygujące -->
+      <label for="correctiveActions">Akcje Korygujące:</label>
+      <input type="text" id="correctiveActions" required /><br /><br />
+
+      <button type="button" onclick="saveData()">Zapisz Dane</button>
+    </form>
+
+    <h2>Raport:</h2>
+    <pre id="reportOutput"></pre>
+    <button type="button" onclick="copyReport()">Kopiuj Raport</button>
+
+    <footer>
+      <p
+        style="
+          text-align: center;
+          font-size: 12px;
+          color: gray;
+          margin-top: 20px;
+        "
+      >
+        By: BT
+      </p>
+    </footer>
+
+    <script>
+      function saveData() {
+        const model = document.getElementById("model").value;
+        const obszar = document.getElementById("obszar").value;
+        const lotRolki = document.getElementById("lotRolki").value;
+        const linia = document.getElementById("linia").value;
+        const problemy = document.getElementById("problemy").value;
+        const ctSend = document.getElementById("ctSend").value;
+        const rpStart = document.getElementById("rpStart").value;
+        const rpEnd = document.getElementById("rpEnd").value;
+        const delayReason = document.getElementById("delayReason").value;
+        const correctiveActions =
+          document.getElementById("correctiveActions").value;
+
+        db.collection("reports")
+          .add({
+            model,
+            obszar,
+            lotRolki,
+            linia,
+            problemy,
+            ctSend,
+            rpStart,
+            rpEnd,
+            delayReason,
+            correctiveActions,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          })
+          .then(() => {
+            alert("Dane zapisane pomyślnie!");
+          })
+          .catch((error) => {
+            console.error("Błąd zapisu: ", error);
+          });
+      }
+
+      function loadData() {
+        db.collection("reports")
+          .orderBy("timestamp", "desc")
+          .limit(1)
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              generateReport(
+                data.model,
+                data.obszar,
+                data.lotRolki,
+                data.linia,
+                data.problemy,
+                data.ctSend,
+                data.rpStart,
+                data.rpEnd,
+                data.delayReason,
+                data.correctiveActions
+              );
+            });
+          })
+          .catch((error) => {
+            console.error("Błąd pobierania: ", error);
+          });
+      }
+
+      function generateReport(
+        model,
+        obszar,
+        lotRolki,
+        linia,
+        problemy,
+        ctSend,
+        rpStart,
+        rpEnd,
+        delayReason,
+        correctiveActions
+      ) {
+        var report =
+          `Fast track ${model} ${obszar}\n` +
+          `Lot rolki: ${lotRolki}\n` +
+          `Linia: ${linia}\n` +
+          `Problemy z rolką: ${problemy}\n` +
+          `Coater sent ft to stock: ${ctSend}\n` +
+          `Rp production start: ${rpStart}\n` +
+          `Rp production end: ${rpEnd}\n` +
+          `Przyczyna opóźnienia: ${delayReason}\n` +
+          `Akcje korygujące: ${correctiveActions}\n`;
+
+        document.getElementById("reportOutput").textContent = report;
+      }
+
+      function copyReport() {
+        const reportText = document.getElementById("reportOutput").textContent;
+        navigator.clipboard
+          .writeText(reportText)
+          .then(() => {
+            alert("Raport skopiowany do schowka!");
+          })
+          .catch((err) => {
+            console.error("Błąd kopiowania: ", err);
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", loadData);
+    </script>
+  </body>
+</html>
