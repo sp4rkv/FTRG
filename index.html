@@ -1,195 +1,144 @@
 <!DOCTYPE html>
 <html lang="pl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Generowanie Raportu</title>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-    <script>
-      // Konfiguracja Firebase
-      const firebaseConfig = {
-        apiKey: "AIzaSyBFxuxC_c24SNpAyDM0CYw8B8zV5GTeY_w",
-        authDomain: "ftrg-4be7c.firebaseapp.com",
-        databaseURL:
-          "https://ftrg-4be7c-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "ftrg-4be7c",
-        storageBucket: "ftrg-4be7c.appspot.com",
-        messagingSenderId: "871035186317",
-        appId: "1:871035186317:web:0f4395a22fb3584cee06c4",
-      };
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
-    </script>
-  </head>
-  <body>
-    <h1>Generowanie Raportu</h1>
-    <form id="reportForm">
-      <!-- Formularz do wprowadzania danych -->
-      <label for="model">Model:</label>
-      <select id="model" required>
-        <option value="e129">e129</option>
-        <option value="e131">e131</option>
-        <option value="e125">e125</option></select
-      ><br /><br />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generowanie Raportu</title>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <script>
+    // Konfiguracja Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBFxuxC_c24SNpAyDM0CYw8B8zV5GTeY_w",
+      authDomain: "ftrg-4be7c.firebaseapp.com",
+      databaseURL: "https://ftrg-4be7c-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "ftrg-4be7c",
+      storageBucket: "ftrg-4be7c.appspot.com",
+      messagingSenderId: "871035186317",
+      appId: "1:871035186317:web:0f4395a22fb3584cee06c4"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
+</head>
+<body>
+  <h1>Generowanie Raportu</h1>
+  <form id="reportForm">
+    <!-- Formularz do wprowadzania danych -->
+    <label for="model">Model:</label>
+    <select id="model" required>
+      <option value="e129">e129</option>
+      <option value="e131">e131</option>
+      <option value="e125">e125</option>
+    </select><br><br>
 
-      <label for="obszar">Obszar:</label>
-      <select id="obszar" required>
-        <option value="anoda">Anoda</option>
-        <option value="cathoda">Cathoda</option></select
-      ><br /><br />
+    <label for="obszar">Obszar:</label>
+    <select id="obszar" required>
+      <option value="anoda">Anoda</option>
+      <option value="cathoda">Cathoda</option>
+    </select><br><br>
 
-      <label for="lotRolki">Lot Rolki:</label>
-      <input type="text" id="lotRolki" required /><br /><br />
+    <label for="lotRolki">Lot Rolki:</label>
+    <input type="text" id="lotRolki" required><br><br>
 
-      <label for="linia">Linia:</label>
-      <select id="linia" required>
-        <option value="8-1">8-1</option>
-        <option value="8-2">8-2</option>
-        <option value="9-1">9-1</option>
-        <option value="9-2">9-2</option>
-        <option value="10-1">10-1</option>
-        <option value="10-2">10-2</option></select
-      ><br /><br />
+    <label for="linia">Linia:</label>
+    <select id="linia" required>
+      <option value="8-1">8-1</option>
+      <option value="8-2">8-2</option>
+      <option value="9-1">9-1</option>
+      <option value="9-2">9-2</option>
+      <option value="10-1">10-1</option>
+      <option value="10-2">10-2</option>
+    </select><br><br>
 
-      <label for="problemy">Problemy z Rolką:</label>
-      <input type="text" id="problemy" value="brak" required /><br /><br />
+    <label for="problemy">Problemy z Rolką:</label>
+    <input type="text" id="problemy" value="brak" required><br><br>
 
-      <label for="ctSend">Czas wysłania Coatera:</label>
-      <input type="text" id="ctSend" placeholder="HH:MM" required /><br /><br />
+    <label for="ctSend">Czas wysłania Coatera:</label>
+    <input type="text" id="ctSend" placeholder="HH:MM" required><br><br>
 
-      <label for="rpStart">RP Production Start:</label>
-      <input
-        type="text"
-        id="rpStart"
-        placeholder="HH:MM"
-        required
-      /><br /><br />
+    <label for="rpStart">RP Production Start:</label>
+    <input type="text" id="rpStart" placeholder="HH:MM" required><br><br>
 
-      <label for="rpEnd">RP Production End:</label>
-      <input type="text" id="rpEnd" placeholder="HH:MM" required /><br /><br />
+    <label for="rpEnd">RP Production End:</label>
+    <input type="text" id="rpEnd" placeholder="HH:MM" required><br><br>
 
-      <label for="delayReason">Przyczyna Opóźnienia:</label>
-      <input type="text" id="delayReason" required /><br /><br />
+    <label for="delayReason">Przyczyna Opóźnienia:</label>
+    <input type="text" id="delayReason" required><br><br>
 
-      <label for="correctiveActions">Akcje Korygujące:</label>
-      <input type="text" id="correctiveActions" required /><br /><br />
+    <label for="correctiveActions">Akcje Korygujące:</label>
+    <input type="text" id="correctiveActions" required><br><br>
+  </form>
 
-      <button type="button" onclick="saveData()">Zapisz Dane</button>
-    </form>
+  <h2>Raport:</h2>
+  <pre id="reportOutput"></pre>
+  <button type="button" onclick="copyReport()">Kopiuj Raport</button>
 
-    <h2>Raport:</h2>
-    <pre id="reportOutput"></pre>
-    <button type="button" onclick="copyReport()">Kopiuj Raport</button>
+  <footer>
+    <p style="text-align: center; font-size: 12px; color: gray; margin-top: 20px;">By: BT</p>
+  </footer>
 
-    <footer>
-      <p
-        style="
-          text-align: center;
-          font-size: 12px;
-          color: gray;
-          margin-top: 20px;
-        "
-      >
-        By: BT
-      </p>
-    </footer>
+  <script>
+    function saveData() {
+      const model = document.getElementById('model').value;
+      const obszar = document.getElementById('obszar').value;
+      const lotRolki = document.getElementById('lotRolki').value;
+      const linia = document.getElementById('linia').value;
+      const problemy = document.getElementById('problemy').value;
+      const ctSend = document.getElementById('ctSend').value;
+      const rpStart = document.getElementById('rpStart').value;
+      const rpEnd = document.getElementById('rpEnd').value;
+      const delayReason = document.getElementById('delayReason').value;
+      const correctiveActions = document.getElementById('correctiveActions').value;
 
-    <script>
-      function saveData() {
-        const model = document.getElementById("model").value;
-        const obszar = document.getElementById("obszar").value;
-        const lotRolki = document.getElementById("lotRolki").value;
-        const linia = document.getElementById("linia").value;
-        const problemy = document.getElementById("problemy").value;
-        const ctSend = document.getElementById("ctSend").value;
-        const rpStart = document.getElementById("rpStart").value;
-        const rpEnd = document.getElementById("rpEnd").value;
-        const delayReason = document.getElementById("delayReason").value;
-        const correctiveActions =
-          document.getElementById("correctiveActions").value;
+      db.ref("reports/currentReport").set({
+        model, obszar, lotRolki, linia, problemy, ctSend, rpStart, rpEnd, delayReason, correctiveActions
+      });
+    }
 
-        db.ref("reports/currentReport")
-          .set({
-            model,
-            obszar,
-            lotRolki,
-            linia,
-            problemy,
-            ctSend,
-            rpStart,
-            rpEnd,
-            delayReason,
-            correctiveActions,
-          })
-          .then(() => {
-            console.log("Dane zapisane pomyślnie!");
-          })
-          .catch((error) => {
-            console.error("Błąd zapisu: ", error);
-          });
-      }
+    function setupAutoSave() {
+      const inputs = document.querySelectorAll("#reportForm input, #reportForm select");
+      inputs.forEach(input => input.addEventListener("input", saveData));
+    }
 
-      function setupRealtimeListener() {
-        db.ref("reports/currentReport").on("value", (snapshot) => {
-          const data = snapshot.val();
-          if (data) {
-            generateReport(
-              data.model,
-              data.obszar,
-              data.lotRolki,
-              data.linia,
-              data.problemy,
-              data.ctSend,
-              data.rpStart,
-              data.rpEnd,
-              data.delayReason,
-              data.correctiveActions
-            );
-          }
-        });
-      }
+    function setupRealtimeListener() {
+      db.ref("reports/currentReport").on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          generateReport(data.model, data.obszar, data.lotRolki, data.linia, data.problemy, data.ctSend, data.rpStart, data.rpEnd, data.delayReason, data.correctiveActions);
+        }
+      });
+    }
 
-      function generateReport(
-        model,
-        obszar,
-        lotRolki,
-        linia,
-        problemy,
-        ctSend,
-        rpStart,
-        rpEnd,
-        delayReason,
-        correctiveActions
-      ) {
-        var report =
-          `Fast track ${model} ${obszar}\n` +
-          `Lot rolki: ${lotRolki}\n` +
-          `Linia: ${linia}\n` +
-          `Problemy z rolką: ${problemy}\n` +
-          `Coater sent ft to stock: ${ctSend}\n` +
-          `Rp production start: ${rpStart}\n` +
-          `Rp production end: ${rpEnd}\n` +
-          `Przyczyna opóźnienia: ${delayReason}\n` +
-          `Akcje korygujące: ${correctiveActions}\n`;
+    function generateReport(model, obszar, lotRolki, linia, problemy, ctSend, rpStart, rpEnd, delayReason, correctiveActions) {
+      var report = 
+        `Fast track ${model} ${obszar}\n` +
+        `Lot rolki: ${lotRolki}\n` +
+        `Linia: ${linia}\n` +
+        `Problemy z rolką: ${problemy}\n` +
+        `Coater sent ft to stock: ${ctSend}\n` +
+        `Rp production start: ${rpStart}\n` +
+        `Rp production end: ${rpEnd}\n` +
+        `Przyczyna opóźnienia: ${delayReason}\n` +
+        `Akcje korygujące: ${correctiveActions}\n`;
 
-        document.getElementById("reportOutput").textContent = report;
-      }
+      document.getElementById('reportOutput').textContent = report;
+    }
 
-      function copyReport() {
-        const reportText = document.getElementById("reportOutput").textContent;
-        navigator.clipboard
-          .writeText(reportText)
-          .then(() => {
-            alert("Raport skopiowany do schowka!");
-          })
-          .catch((err) => {
-            console.error("Błąd kopiowania: ", err);
-          });
-      }
+    function copyReport() {
+      const reportText = document.getElementById('reportOutput').textContent;
+      navigator.clipboard.writeText(reportText).then(() => {
+        alert("Raport skopiowany do schowka!");
+      }).catch(err => {
+        console.error("Błąd kopiowania: ", err);
+      });
+    }
 
-      document.addEventListener("DOMContentLoaded", setupRealtimeListener);
-    </script>
-  </body>
+    document.addEventListener("DOMContentLoaded", () => {
+      setupAutoSave();
+      setupRealtimeListener();
+    });
+  </script>
+</body>
 </html>
