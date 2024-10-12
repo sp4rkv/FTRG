@@ -6,25 +6,27 @@
     <title>Generowanie Raportu</title>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <script>
       // Konfiguracja Firebase
       const firebaseConfig = {
         apiKey: "AIzaSyBFxuxC_c24SNpAyDM0CYw8B8zV5GTeY_w",
         authDomain: "ftrg-4be7c.firebaseapp.com",
+        databaseURL:
+          "https://ftrg-4be7c-default-rtdb.europe-west1.firebasedatabase.app/", // Adres URL bazy danych Realtime Database
         projectId: "ftrg-4be7c",
         storageBucket: "ftrg-4be7c.appspot.com",
         messagingSenderId: "871035186317",
         appId: "1:871035186317:web:0f4395a22fb3584cee06c4",
       };
       firebase.initializeApp(firebaseConfig);
-      const db = firebase.firestore();
+      const db = firebase.database();
     </script>
   </head>
   <body>
     <h1>Generowanie Raportu</h1>
     <form id="reportForm">
-      <!-- Wybór Modelu -->
+      <!-- Formularz do wprowadzania danych -->
       <label for="model">Model:</label>
       <select id="model" required>
         <option value="e129">e129</option>
@@ -32,18 +34,15 @@
         <option value="e125">e125</option></select
       ><br /><br />
 
-      <!-- Wybór Obszaru -->
       <label for="obszar">Obszar:</label>
       <select id="obszar" required>
         <option value="anoda">Anoda</option>
         <option value="cathoda">Cathoda</option></select
       ><br /><br />
 
-      <!-- Lot Rolki -->
       <label for="lotRolki">Lot Rolki:</label>
       <input type="text" id="lotRolki" required /><br /><br />
 
-      <!-- Wybór Linii -->
       <label for="linia">Linia:</label>
       <select id="linia" required>
         <option value="8-1">8-1</option>
@@ -54,15 +53,12 @@
         <option value="10-2">10-2</option></select
       ><br /><br />
 
-      <!-- Problemy z Rolką -->
       <label for="problemy">Problemy z Rolką:</label>
       <input type="text" id="problemy" value="brak" required /><br /><br />
 
-      <!-- Czas Wysłania Coatera -->
       <label for="ctSend">Czas wysłania Coatera:</label>
       <input type="text" id="ctSend" placeholder="HH:MM" required /><br /><br />
 
-      <!-- RP Production Start -->
       <label for="rpStart">RP Production Start:</label>
       <input
         type="text"
@@ -71,15 +67,12 @@
         required
       /><br /><br />
 
-      <!-- RP Production End -->
       <label for="rpEnd">RP Production End:</label>
       <input type="text" id="rpEnd" placeholder="HH:MM" required /><br /><br />
 
-      <!-- Przyczyna Opóźnienia -->
       <label for="delayReason">Przyczyna Opóźnienia:</label>
       <input type="text" id="delayReason" required /><br /><br />
 
-      <!-- Akcje Korygujące -->
       <label for="correctiveActions">Akcje Korygujące:</label>
       <input type="text" id="correctiveActions" required /><br /><br />
 
@@ -117,8 +110,8 @@
         const correctiveActions =
           document.getElementById("correctiveActions").value;
 
-        db.collection("reports")
-          .add({
+        db.ref("reports/currentReport")
+          .set({
             model,
             obszar,
             lotRolki,
@@ -129,41 +122,33 @@
             rpEnd,
             delayReason,
             correctiveActions,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
           })
           .then(() => {
-            alert("Dane zapisane pomyślnie!");
+            console.log("Dane zapisane pomyślnie!");
           })
           .catch((error) => {
             console.error("Błąd zapisu: ", error);
           });
       }
 
-      function loadData() {
-        db.collection("reports")
-          .orderBy("timestamp", "desc")
-          .limit(1)
-          .get()
-          .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              const data = doc.data();
-              generateReport(
-                data.model,
-                data.obszar,
-                data.lotRolki,
-                data.linia,
-                data.problemy,
-                data.ctSend,
-                data.rpStart,
-                data.rpEnd,
-                data.delayReason,
-                data.correctiveActions
-              );
-            });
-          })
-          .catch((error) => {
-            console.error("Błąd pobierania: ", error);
-          });
+      function setupRealtimeListener() {
+        db.ref("reports/currentReport").on("value", (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            generateReport(
+              data.model,
+              data.obszar,
+              data.lotRolki,
+              data.linia,
+              data.problemy,
+              data.ctSend,
+              data.rpStart,
+              data.rpEnd,
+              data.delayReason,
+              data.correctiveActions
+            );
+          }
+        });
       }
 
       function generateReport(
@@ -204,7 +189,7 @@
           });
       }
 
-      document.addEventListener("DOMContentLoaded", loadData);
+      document.addEventListener("DOMContentLoaded", setupRealtimeListener);
     </script>
   </body>
 </html>
