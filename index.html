@@ -1,218 +1,289 @@
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generowanie Raportu</title>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-database.js"></script>
-  <script>
-    // Konfiguracja Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyBFxuxC_c24SNpAyDM0CYw8B8zV5GTeY_w",
-      authDomain: "ftrg-4be7c.firebaseapp.com",
-      databaseURL: "https://ftrg-4be7c-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "ftrg-4be7c",
-      storageBucket: "ftrg-4be7c.appspot.com",
-      messagingSenderId: "871035186317",
-      appId: "1:871035186317:web:0f4395a22fb3584cee06c4"
-    };
-    // Inicjalizacja Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-  </script>
-</head>
-<body>
-  <h1>Generowanie Raportu</h1>
-  <form id="reportForm">
-    <!-- Formularz do wprowadzania danych -->
-    <label for="model">Model:</label>
-    <select id="model" required>
-      <option value="e129">e129</option>
-      <option value="e131">e131</option>
-      <option value="e125">e125</option>
-    </select><br><br>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Generowanie Raportu</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-database.js"></script>
+    <script>
+      // Konfiguracja Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyBFxuxC_c24SNpAyDM0CYw8B8zV5GTeY_w",
+        authDomain: "ftrg-4be7c.firebaseapp.com",
+        databaseURL:
+          "https://ftrg-4be7c-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "ftrg-4be7c",
+        storageBucket: "ftrg-4be7c.appspot.com",
+        messagingSenderId: "871035186317",
+        appId: "1:871035186317:web:0f4395a22fb3584cee06c4",
+      };
+      // Inicjalizacja Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+    </script>
+  </head>
+  <body>
+    <h1>FastTrack Raport Generate</h1>
+    <form id="reportForm">
+      <!-- Formularz do wprowadzania danych -->
+      <div class="section1">
+        <label for="model">Model:</label>
+        <select id="model" required>
+          <option value="e129">e129</option>
+          <option value="e131">e131</option>
+          <option value="e125">e125</option></select
+        ><br /><br />
+      </div>
+      <div class="section2">
+        <label for="obszar">Obszar:</label>
+        <select id="obszar" required>
+          <option value="anoda">Anoda</option>
+          <option value="cathoda">Cathoda</option></select
+        ><br /><br />
+      </div>
+      <div class="section3">
+        <label for="lotRolki">Lot Rolki:</label>
+        <input type="text" id="lotRolki" required /><br /><br />
+      </div>
+      <div class="section4">
+        <label for="linia">Linia:</label>
+        <select id="linia" required>
+          <option value="8-1">8-1</option>
+          <option value="8-2">8-2</option>
+          <option value="9-1">9-1</option>
+          <option value="9-2">9-2</option>
+          <option value="10-1">10-1</option>
+          <option value="10-2">10-2</option></select
+        ><br /><br />
+      </div>
+      <div class="section5">
+        <label for="problemy">Problemy z Rolką:</label>
+        <input type="text" id="problemy" value="brak" required /><br /><br />
+      </div>
+      <div class="section6">
+        <!-- Czas Wysłania Coatera -->
+        <label for="ctSend">Czas wysłania Coatera:</label>
+        <select id="ctSendHour"></select>
+        :
+        <select id="ctSendMinute"></select>
+        <select id="ctSendPeriod">
+          <option value="AM">AM</option>
+          <option value="PM">PM</option></select
+        ><br /><br />
 
-    <label for="obszar">Obszar:</label>
-    <select id="obszar" required>
-      <option value="anoda">Anoda</option>
-      <option value="cathoda">Cathoda</option>
-    </select><br><br>
+        <!-- RP Production Start -->
+        <label for="rpStart">RP Production Start:</label>
+        <select id="rpStartHour"></select>
+        :
+        <select id="rpStartMinute"></select>
+        <select id="rpStartPeriod">
+          <option value="AM">AM</option>
+          <option value="PM">PM</option></select
+        ><br /><br />
 
-    <label for="lotRolki">Lot Rolki:</label>
-    <input type="text" id="lotRolki" required><br><br>
+        <!-- RP Production End -->
+        <label for="rpEnd">RP Production End:</label>
+        <select id="rpEndHour"></select>
+        :
+        <select id="rpEndMinute"></select>
+        <select id="rpEndPeriod">
+          <option value="AM">AM</option>
+          <option value="PM">PM</option></select
+        ><br /><br />
+      </div>
+      <div class="section7">
+        <label for="delayReason">Przyczyna Opóźnienia:</label>
+        <input type="text" id="delayReason" required /><br /><br />
 
-    <label for="linia">Linia:</label>
-    <select id="linia" required>
-      <option value="8-1">8-1</option>
-      <option value="8-2">8-2</option>
-      <option value="9-1">9-1</option>
-      <option value="9-2">9-2</option>
-      <option value="10-1">10-1</option>
-      <option value="10-2">10-2</option>
-    </select><br><br>
+        <label for="correctiveActions">Akcje Korygujące:</label>
+        <input type="text" id="correctiveActions" required /><br /><br />
+      </div>
+    </form>
+    <button type="button" onclick="copyReport()">Kopiuj Raport</button>
+    <h2>Raport:</h2>
+    <pre id="reportOutput"></pre>
 
-    <label for="problemy">Problemy z Rolką:</label>
-    <input type="text" id="problemy" value="brak" required><br><br>
+    <footer>
+      <p
+        style="
+          text-align: center;
+          font-size: 12px;
+          color: gray;
+          margin-top: 20px;
+        "
+      >
+        By: BT
+      </p>
+    </footer>
 
-    <!-- Czas Wysłania Coatera -->
-    <label for="ctSend">Czas wysłania Coatera:</label>
-    <select id="ctSendHour"></select> :
-    <select id="ctSendMinute"></select>
-    <select id="ctSendPeriod">
-      <option value="AM">AM</option>
-      <option value="PM">PM</option>
-    </select><br><br>
+    <script>
+      // Funkcja konwersji czasu na 24-godzinny format
+      function convertTo24Hour(hour, minute, period) {
+        hour = parseInt(hour);
+        minute = parseInt(minute);
+        if (period === "PM" && hour < 12) hour += 12;
+        if (period === "AM" && hour === 12) hour = 0;
+        return `${String(hour).padStart(2, "0")}:${String(minute).padStart(
+          2,
+          "0"
+        )}`;
+      }
 
-    <!-- RP Production Start -->
-    <label for="rpStart">RP Production Start:</label>
-    <select id="rpStartHour"></select> :
-    <select id="rpStartMinute"></select>
-    <select id="rpStartPeriod">
-      <option value="AM">AM</option>
-      <option value="PM">PM</option>
-    </select><br><br>
+      // Funkcja obliczania różnicy czasu w minutach
+      function calculateProcessingTime(startTime, endTime) {
+        const [startHour, startMinute] = startTime.split(":").map(Number);
+        const [endHour, endMinute] = endTime.split(":").map(Number);
+        const startDate = new Date(0, 0, 0, startHour, startMinute);
+        const endDate = new Date(0, 0, 0, endHour, endMinute);
+        let diff = (endDate - startDate) / 60000; // różnica w minutach
+        if (diff < 0) diff += 1440; // dodaj 24 godziny jeśli różnica jest ujemna
+        return diff;
+      }
 
-    <!-- RP Production End -->
-    <label for="rpEnd">RP Production End:</label>
-    <select id="rpEndHour"></select> :
-    <select id="rpEndMinute"></select>
-    <select id="rpEndPeriod">
-      <option value="AM">AM</option>
-      <option value="PM">PM</option>
-    </select><br><br>
+      // Funkcja automatycznego zapisu danych
+      function saveData() {
+        const ctSend = convertTo24Hour(
+          document.getElementById("ctSendHour").value,
+          document.getElementById("ctSendMinute").value,
+          document.getElementById("ctSendPeriod").value
+        );
+        const rpStart = convertTo24Hour(
+          document.getElementById("rpStartHour").value,
+          document.getElementById("rpStartMinute").value,
+          document.getElementById("rpStartPeriod").value
+        );
+        const rpEnd = convertTo24Hour(
+          document.getElementById("rpEndHour").value,
+          document.getElementById("rpEndMinute").value,
+          document.getElementById("rpEndPeriod").value
+        );
 
-    <label for="delayReason">Przyczyna Opóźnienia:</label>
-    <input type="text" id="delayReason" required><br><br>
+        const processingTime = calculateProcessingTime(ctSend, rpEnd);
 
-    <label for="correctiveActions">Akcje Korygujące:</label>
-    <input type="text" id="correctiveActions" required><br><br>
-  </form>
+        const data = {
+          model: document.getElementById("model").value,
+          obszar: document.getElementById("obszar").value,
+          lotRolki: document.getElementById("lotRolki").value,
+          linia: document.getElementById("linia").value,
+          problemy: document.getElementById("problemy").value,
+          ctSend,
+          rpStart,
+          rpEnd,
+          processingTime,
+          delayReason: document.getElementById("delayReason").value,
+          correctiveActions: document.getElementById("correctiveActions").value,
+        };
 
-  <h2>Raport:</h2>
-  <pre id="reportOutput"></pre>
-  <button type="button" onclick="copyReport()">Kopiuj Raport</button>
+        db.ref("reports/currentReport").set(data);
+      }
 
-  <footer>
-    <p style="text-align: center; font-size: 12px; color: gray; margin-top: 20px;">By: BT</p>
-  </footer>
+      // Inicjalizacja pól wyboru godzin i minut
+      function populateTimeSelectors() {
+        const hours = [...Array(12).keys()].map((i) => i + 1);
+        const minutes = [...Array(60).keys()].map((i) =>
+          String(i).padStart(2, "0")
+        );
+        const hourSelectors = ["ctSendHour", "rpStartHour", "rpEndHour"];
+        const minuteSelectors = [
+          "ctSendMinute",
+          "rpStartMinute",
+          "rpEndMinute",
+        ];
 
-  <script>
-    // Funkcja konwersji czasu na 24-godzinny format
-    function convertTo24Hour(hour, minute, period) {
-      hour = parseInt(hour);
-      minute = parseInt(minute);
-      if (period === "PM" && hour < 12) hour += 12;
-      if (period === "AM" && hour === 12) hour = 0;
-      return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-    }
+        hourSelectors.forEach((id) => {
+          const select = document.getElementById(id);
+          hours.forEach((hour) => {
+            const option = document.createElement("option");
+            option.value = hour;
+            option.text = hour;
+            select.appendChild(option);
+          });
+        });
 
-    // Funkcja obliczania różnicy czasu w minutach
-    function calculateProcessingTime(startTime, endTime) {
-      const [startHour, startMinute] = startTime.split(':').map(Number);
-      const [endHour, endMinute] = endTime.split(':').map(Number);
-      const startDate = new Date(0, 0, 0, startHour, startMinute);
-      const endDate = new Date(0, 0, 0, endHour, endMinute);
-      let diff = (endDate - startDate) / 60000; // różnica w minutach
-      if (diff < 0) diff += 1440; // dodaj 24 godziny jeśli różnica jest ujemna
-      return diff;
-    }
+        minuteSelectors.forEach((id) => {
+          const select = document.getElementById(id);
+          minutes.forEach((minute) => {
+            const option = document.createElement("option");
+            option.value = minute;
+            option.text = minute;
+            select.appendChild(option);
+          });
+        });
+      }
 
-    // Funkcja automatycznego zapisu danych
-    function saveData() {
-      const ctSend = convertTo24Hour(document.getElementById('ctSendHour').value, document.getElementById('ctSendMinute').value, document.getElementById('ctSendPeriod').value);
-      const rpStart = convertTo24Hour(document.getElementById('rpStartHour').value, document.getElementById('rpStartMinute').value, document.getElementById('rpStartPeriod').value);
-      const rpEnd = convertTo24Hour(document.getElementById('rpEndHour').value, document.getElementById('rpEndMinute').value, document.getElementById('rpEndPeriod').value);
+      function setupRealtimeListener() {
+        db.ref("reports/currentReport").on("value", (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            generateReport(
+              data.model,
+              data.obszar,
+              data.lotRolki,
+              data.linia,
+              data.problemy,
+              data.ctSend,
+              data.rpStart,
+              data.rpEnd,
+              data.processingTime,
+              data.delayReason,
+              data.correctiveActions
+            );
+          }
+        });
+      }
 
-      const processingTime = calculateProcessingTime(ctSend, rpEnd);
-
-      const data = {
-        model: document.getElementById('model').value,
-        obszar: document.getElementById('obszar').value,
-        lotRolki: document.getElementById('lotRolki').value,
-        linia: document.getElementById('linia').value,
-        problemy: document.getElementById('problemy').value,
+      function generateReport(
+        model,
+        obszar,
+        lotRolki,
+        linia,
+        problemy,
         ctSend,
         rpStart,
         rpEnd,
         processingTime,
-        delayReason: document.getElementById('delayReason').value,
-        correctiveActions: document.getElementById('correctiveActions').value
-      };
+        delayReason,
+        correctiveActions
+      ) {
+        const report =
+          `Fast track ${model} ${obszar}\n` +
+          `Lot rolki: ${lotRolki}\n` +
+          `Linia: ${linia}\n` +
+          `Problemy z rolką: ${problemy}\n` +
+          `Coater sent ft to stock: ${ctSend}\n` +
+          `Rp production start: ${rpStart}\n` +
+          `Rp production end: ${rpEnd}\n` +
+          `Czas procesowania od coat do zakończenia procesowania na RP (TARGET: 60 min): ${processingTime} min\n` +
+          `Przyczyna opóźnienia: ${delayReason}\n` +
+          `Akcje korygujące: ${correctiveActions}\n`;
 
-      db.ref("reports/currentReport").set(data);
-    }
+        document.getElementById("reportOutput").textContent = report;
+      }
 
-    // Inicjalizacja pól wyboru godzin i minut
-    function populateTimeSelectors() {
-      const hours = [...Array(12).keys()].map(i => i + 1);
-      const minutes = [...Array(60).keys()].map(i => String(i).padStart(2, '0'));
-      const hourSelectors = ['ctSendHour', 'rpStartHour', 'rpEndHour'];
-      const minuteSelectors = ['ctSendMinute', 'rpStartMinute', 'rpEndMinute'];
+      function copyReport() {
+        const reportText = document.getElementById("reportOutput").textContent;
+        navigator.clipboard
+          .writeText(reportText)
+          .then(() => {
+            alert("Raport skopiowany do schowka!");
+          })
+          .catch((err) => {
+            console.error("Błąd kopiowania: ", err);
+          });
+      }
 
-      hourSelectors.forEach(id => {
-        const select = document.getElementById(id);
-        hours.forEach(hour => {
-          const option = document.createElement('option');
-          option.value = hour;
-          option.text = hour;
-          select.appendChild(option);
-        });
+      document.addEventListener("DOMContentLoaded", () => {
+        populateTimeSelectors();
+        setupRealtimeListener();
+
+        const inputs = document.querySelectorAll(
+          "#reportForm input, #reportForm select"
+        );
+        inputs.forEach((input) => input.addEventListener("input", saveData));
       });
-
-      minuteSelectors.forEach(id => {
-        const select = document.getElementById(id);
-        minutes.forEach(minute => {
-          const option = document.createElement('option');
-          option.value = minute;
-          option.text = minute;
-          select.appendChild(option);
-        });
-      });
-    }
-
-    function setupRealtimeListener() {
-      db.ref("reports/currentReport").on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          generateReport(data.model, data.obszar, data.lotRolki, data.linia, data.problemy, data.ctSend, data.rpStart, data.rpEnd, data.processingTime, data.delayReason, data.correctiveActions);
-        }
-      });
-    }
-
-    function generateReport(model, obszar, lotRolki, linia, problemy, ctSend, rpStart, rpEnd, processingTime, delayReason, correctiveActions) {
-      const report = 
-        `Fast track ${model} ${obszar}\n` +
-        `Lot rolki: ${lotRolki}\n` +
-        `Linia: ${linia}\n` +
-        `Problemy z rolką: ${problemy}\n` +
-        `Coater sent ft to stock: ${ctSend}\n` +
-        `Rp production start: ${rpStart}\n` +
-        `Rp production end: ${rpEnd}\n` +
-        `Czas procesowania od coat do zakończenia procesowania na RP (TARGET: 60 min): ${processingTime} min\n` +
-        `Przyczyna opóźnienia: ${delayReason}\n` +
-        `Akcje korygujące: ${correctiveActions}\n`;
-
-      document.getElementById('reportOutput').textContent = report;
-    }
-
-    function copyReport() {
-      const reportText = document.getElementById('reportOutput').textContent;
-      navigator.clipboard.writeText(reportText).then(() => {
-        alert("Raport skopiowany do schowka!");
-      }).catch(err => {
-        console.error("Błąd kopiowania: ", err);
-      });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      populateTimeSelectors();
-      setupRealtimeListener();
-
-      const inputs = document.querySelectorAll("#reportForm input, #reportForm select");
-      inputs.forEach(input => input.addEventListener("input", saveData));
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>
